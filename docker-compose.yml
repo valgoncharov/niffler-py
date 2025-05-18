@@ -176,7 +176,7 @@ services:
     image: ${PREFIX}/niffler-e-2-e-tests:latest
     build:
       context: ./
-      dockerfile: ./niffler-e-2-e-tests/Dockerfile
+      dockerfile: ./niffler-e-2-e-python_test/Dockerfile
     environment:
       - ALLURE_DOCKER_API=${ALLURE_DOCKER_API}
       - GITHUB_TOKEN=${GITHUB_TOKEN}

@@ -40,3 +40,9 @@ out/
 
 ### gRPC generated files ###
 /niffler-grpc-common/src/generated/**
+
+.venv/
+__pycache__/
+*.pyc
+playwright.log
+test-results/
