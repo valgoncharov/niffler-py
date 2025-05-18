@@ -22,10 +22,14 @@ def test_login_by_not_exist_user(page: Page):
 
 #Новым пользователем(?)
 def test_login_by_exist_user(page: Page):
+    method_name(page)
+    assert page.text_content("text=History of Spendings")
+    assert page.text_content("text=Statistics")
+    assert page.text_content("text=There are no spendings")
+
+
+def method_name(page):
     page.goto("http://auth.niffler.dc:9000/login")
     page.fill("[name='username']", "usertest")
     page.fill("[name='password']", "Password123!")
     page.click("button:has-text('Log in')")
-    assert page.text_content("text=History of Spendings")
-    assert page.text_content("text=Statistics")
-    assert page.text_content("text=There are no spendings")
