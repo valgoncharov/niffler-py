@@ -13,3 +13,10 @@ def browser(playwright):
     browser = playwright.chromium.launch(headless=False)
     yield browser
     browser.close()
+
+
+def is_user_logged_in(page):
+    page.goto("http://auth.niffler.dc:9000/login")
+    page.fill("[name='username']", "usertest")
+    page.fill("[name='password']", "Password123!")
+    page.click("button:has-text('Log in')")

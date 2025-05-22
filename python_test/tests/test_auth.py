@@ -1,5 +1,7 @@
 from playwright.sync_api import Page
 
+from python_test.tests.conftest import is_user_logged_in
+
 
 def test_create_user(page: Page):
     page.goto("http://auth.niffler.dc:9000/login")
@@ -22,14 +24,7 @@ def test_login_by_not_exist_user(page: Page):
 
 #Новым пользователем(?)
 def test_login_by_exist_user(page: Page):
-    method_name(page)
+    is_user_logged_in(page)
     assert page.text_content("text=History of Spendings")
     assert page.text_content("text=Statistics")
     assert page.text_content("text=There are no spendings")
-
-
-def method_name(page):
-    page.goto("http://auth.niffler.dc:9000/login")
-    page.fill("[name='username']", "usertest")
-    page.fill("[name='password']", "Password123!")
-    page.click("button:has-text('Log in')")
