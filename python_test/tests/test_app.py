@@ -1,10 +1,10 @@
-from python_test.tests.conftest import is_user_logged_in
+from python_test.tests.conftest import login_user_by_ui
 
 
 class TestApp:
 
     def test_add_new_spending_rub(self, page):
-        is_user_logged_in(page)
+        login_user_by_ui(page)
         page.get_by_text("New spending").click()
         page.fill("[name='amount']", "10")
         page.fill("[name='category']", "rest")
@@ -16,7 +16,7 @@ class TestApp:
         assert locator.is_visible()
 
     def test_add_new_spending_usd(self, page):
-        is_user_logged_in(page)
+        login_user_by_ui(page)
         page.get_by_text("New spending").click()
         page.fill("[name='amount']", "10")
         page.locator("#currency").click()
@@ -30,7 +30,7 @@ class TestApp:
         assert locator.is_visible()
 
     def test_add_empty_spending(self, page):
-        is_user_logged_in(page)
+        login_user_by_ui(page)
         page.get_by_text("New spending").click()
         page.click("#save")
 
@@ -41,19 +41,19 @@ class TestApp:
         assert locator.is_visible()
 
     def test_search_by_date_spending(self, page):
-        is_user_logged_in(page)
+        login_user_by_ui(page)
         page.get_by_role("textbox", name="search").fill("rest")
         page.keyboard.press("Enter")
         assert page.locator('tr:has-text("rest")')
 
     def test_search_not_exist_spending(self, page):
-        is_user_logged_in(page)
+        login_user_by_ui(page)
         page.get_by_role("textbox", name="search").fill("test")
         page.keyboard.press("Enter")
         page.is_visible("text=There are no spendings")
 
     def test_delete_spending(self, page):
-        is_user_logged_in(page)
+        login_user_by_ui(page)
         page.locator('tr.MuiTableRow-root[role="checkbox"]').click()
         page.click("#delete")
 

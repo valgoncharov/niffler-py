@@ -1,10 +1,10 @@
-from python_test.tests.conftest import is_user_logged_in
+from python_test.tests.conftest import login_user_by_ui
 
 
 class TestProfile:
 
     def test_profile_page(self, page):
-        is_user_logged_in(page)
+        login_user_by_ui(page)
         page.get_by_role("button", name="Menu").click()
         page.get_by_role("link", name="Profile").click()
 
