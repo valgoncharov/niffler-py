@@ -2,7 +2,9 @@ import os
 
 import pytest
 from playwright.sync_api import Playwright, sync_playwright
+from python_test.data_helpers.api_helpers import UserApiHelper
 from dotenv import load_dotenv
+from faker import Faker
 
 
 @pytest.fixture(scope="session")
@@ -25,9 +27,31 @@ def gateway_url(envs):
     return os.getenv("GATEWAY_URL")
 
 
+# @pytest.fixture(scope="session")
+# def app_user(envs):
+#     return os.getenv("TEST_USERNAME"), os.getenv("TEST_PASSWORD")
+
+@pytest.fixture(scope='session')
+def app_user(envs, auth_url: str) -> tuple[str, str]:
+    user_name, password = os.getenv("TEST_USERNAME"), os.getenv("TEST_PASSWORD")
+    UserApiHelper(auth_url).create_user(user_name=user_name, user_password=password)
+    return user_name, password
+
+
 @pytest.fixture(scope="session")
-def app_user(envs):
-    return os.getenv("TEST_USERNAME"), os.getenv("TEST_PASSWORD")
+def fake_app_user():
+    fake = Faker()
+
+    fake_username = fake.user_name()  # Генерация случайного логина
+    fake_password = fake.password(  # Генерация сложного пароля
+        length=12,
+        special_chars=True,
+        digits=True,
+        upper_case=True,
+        lower_case=True,
+    )
+
+    return fake_username, fake_password  # Возвращает кортеж (логин, пароль)
 
 
 @pytest.fixture(scope="session")

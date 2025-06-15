@@ -2,7 +2,7 @@ import pytest
 
 from playwright.sync_api import Page
 
-from python_test.model import (
+from python_test.model.RegisterPage import (
     LoginPage,
     BasePage,
     RegisterPage,
