@@ -1,3 +1,3 @@
 from .base_page_locators import BasePageLocators as BasePageLocators
-from .login_page_locatorc import LoginPageLocators as LoginPageLocators
+from .login_page_locators import LoginPageLocators as LoginPageLocators
 from python_test.locators.register_page_locators import RegisterPageLocators as RegisterPageLocators

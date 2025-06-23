@@ -1,14 +1,11 @@
 import pytest
 from python_test.tests.conftest import login_user_by_ui
 from python_test.data_helpers.api_helpers import SpendsHttpClient
+from python_test.model.BasePage import BasePage
+from python_test.model.SpendingPage import SpendingPage
+from conftest import Pages
+import allure
 
-# Title
-DATA_TITLE = "text=There are no spendings"
-# Buttons
-NEW_SPENDING_BTN = "New spending"
-DELETE_BTN = "#delete"
-SAVE_BTN = "#save"
-CURRENCY_BTN = "#currency"
 # Fields
 AMOUNT_FIELD = "[name='amount']"
 CATEGORY_FIELD = "[name='category']"
@@ -23,36 +20,43 @@ class TestApp:
         yield
         spends_client.remove_all_spending()
 
-    def test_add_new_spending_rub(self, page, app_user):
-        login_user_by_ui(page, app_user)
-        page.get_by_text(NEW_SPENDING_BTN).click()
+    @Pages.main_page
+    def test_spending_title_exists(self, page, app_user, frontend_url):
+        assert BasePage.should_be_history_title
+
+    @allure.title("Добавление нового расхода в рублях")
+    def test_add_new_spending_rub(self, page, app_user, auth_url):
+        login_user_by_ui(page, app_user, auth_url)
+        SpendingPage.click_new_spending_btn()
         page.fill(AMOUNT_FIELD, "10")
         page.fill(CATEGORY_FIELD, "rest")
         page.fill("[name='description']", "Go to rest")
-        page.click(SAVE_BTN)
+        SpendingPage.click_save_btn()
 
         locator = page.locator("div.MuiAlert-message >> text=New spending is successfully created")
         locator.wait_for(state="visible", timeout=5000)  # ждать до 5 сек
         assert locator.is_visible()
 
-    def test_add_new_spending_usd(self, page, app_user):
-        login_user_by_ui(page, app_user)
-        page.get_by_text(NEW_SPENDING_BTN).click()
+    @allure.title("Добавление нового расхода в долларах")
+    def test_add_new_spending_usd(self, page, app_user, auth_url):
+        login_user_by_ui(page, app_user, auth_url)
+        SpendingPage.click_new_spending_btn()
         page.fill(AMOUNT_FIELD, "10")
-        page.locator(CURRENCY_BTN).click()
+        SpendingPage.click_currency_btn()
         page.get_by_role("option", name="USD").click()
         page.fill(CATEGORY_FIELD, "rest")
         page.fill("[name='description']", "Go to rest")
-        page.click(SAVE_BTN)
+        SpendingPage.click_save_btn()
 
         locator = page.locator("div.MuiAlert-message >> text=New spending is successfully created")
         locator.wait_for(state="visible", timeout=5000)  # ждать до 5 сек
         assert locator.is_visible()
 
-    def test_add_empty_spending(self, page, app_user):
-        login_user_by_ui(page, app_user)
-        page.get_by_text(NEW_SPENDING_BTN).click()
-        page.click(SAVE_BTN)
+    @allure.title("Добавление пустых данных в расходах")
+    def test_add_empty_spending(self, page, app_user, auth_url):
+        login_user_by_ui(page, app_user, auth_url)
+        SpendingPage.click_new_spending_btn()
+        SpendingPage.click_save_btn()
 
         locator = page.locator(".input__helper-text >> text=Amount has to be not less then 0.01")
         assert locator.is_visible()
@@ -60,37 +64,49 @@ class TestApp:
         locator = page.locator(".input__helper-text >> text=Please choose category")
         assert locator.is_visible()
 
-    def test_search_by_date_spending(self, page, app_user):
-        login_user_by_ui(page, app_user)
-        page.get_by_role("textbox", name="search").fill("rest")
-        page.keyboard.press("Enter")
-        assert page.locator('tr:has-text("rest")')
+    @allure.title("Поиск по конкретным данным расходов")
+    def test_search_by_date_spending(self, page, app_user, auth_url):
+        login_user_by_ui(page, app_user, auth_url)
+        SpendingPage.fill_search_field(data="rest")
+        # page.get_by_role("textbox", name="search").fill("rest")
+        # page.keyboard.press("Enter")
+        # assert page.locator('tr:has-text("rest")')
 
-    def test_search_not_exist_spending(self, page, app_user):
-        login_user_by_ui(page, app_user)
-        page.get_by_role("textbox", name="search").fill("test")
-        page.keyboard.press("Enter")
-        page.is_visible(DATA_TITLE)
+    @allure.title("Поиск несуществующих данных по расходам")
+    def test_search_not_exist_spending(self, page, app_user, auth_url):
+        login_user_by_ui(page, app_user, auth_url)
+        SpendingPage.fill_search_field(data="test")
+        # page.get_by_role("textbox", name="search").fill("test")
+        # page.keyboard.press("Enter")
+        BasePage.should_be_data_title() # is_visible()?
 
-    def test_delete_spending(self, page, app_user):
-        login_user_by_ui(page, app_user)
+    @allure.title("Удалить данные по расходу")
+    def test_delete_spending(self, page, app_user, auth_url):
+        login_user_by_ui(page, app_user, auth_url)
         page.locator('tr.MuiTableRow-root[role="checkbox"]').first.click()
-        page.click(DELETE_BTN)
-        page.get_by_role("button", name="Delete").click()
+        SpendingPage.click_delete_btn()
+        SpendingPage.click_delete_btn_on_banner()
         banner = page.locator('div.MuiTypography-body1:has-text("Spendings succesfully deleted")')
         banner.wait_for(state="visible", timeout=5000)  # ждать до 5 сек
         assert banner.is_visible()
 
-    def test_delete_all_spending(self, page, app_user):
-        login_user_by_ui(page, app_user)
+    @allure.title("Удалить все записи по расходам")
+    def test_delete_all_spending(self, page, app_user, auth_url):
+        login_user_by_ui(page, app_user, auth_url)
         page.get_by_role("checkbox", name="select all rows").click()
-        page.click(DELETE_BTN)
-        page.get_by_role("button", name="Delete").click()
+        SpendingPage.click_delete_btn()
+        SpendingPage.click_delete_btn_on_banner()
         banner = page.locator('div.MuiTypography-body1:has-text("Spendings succesfully deleted")')
         banner.wait_for(state="visible", timeout=5000)  # ждать до 5 сек
         assert banner.is_visible()
-        assert page.get_by_text(DATA_TITLE)
+        assert BasePage.should_be_data_title  # page.get_by_text(DATA_TITLE)
 
+
+# TO DO
+class TestApi:
+    def test_spending_action(self, frontend_url):
+        SpendsHttpClient.add_spend('test', 'RUB', 10, 1)
+        assert SpendsHttpClient.get_ids_all_spending('test', 100)
 
 
 

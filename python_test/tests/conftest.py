@@ -1,7 +1,7 @@
 import os
 
 import pytest
-from playwright.sync_api import Playwright, sync_playwright
+from playwright.sync_api import Playwright, sync_playwright, Page
 from python_test.data_helpers.api_helpers import UserApiHelper
 from dotenv import load_dotenv
 from faker import Faker
@@ -26,10 +26,11 @@ def frontend_url(envs):
 def gateway_url(envs):
     return os.getenv("GATEWAY_URL")
 
-
+# Поменял фикстуру
 # @pytest.fixture(scope="session")
 # def app_user(envs):
 #     return os.getenv("TEST_USERNAME"), os.getenv("TEST_PASSWORD")
+
 
 @pytest.fixture(scope='session')
 def app_user(envs, auth_url: str) -> tuple[str, str]:
@@ -67,9 +68,27 @@ def browser(playwright):
     browser.close()
 
 
-def login_user_by_ui(page, app_user):
+def login_user_by_ui(page, app_user, auth_url):
     username, password = app_user
-    page.goto("http://auth.niffler.dc:9000/login")
+    page.goto(f"{auth_url}login")
     page.fill("[name='username']", username)
     page.fill("[name='password']", password)
     page.click("button:has-text('Log in')")
+
+
+@pytest.fixture()
+def auth(page, frontend_url, app_user):
+    username, password = app_user
+    page.goto(f"{frontend_url}login")
+    page.fill("[name='username']", username)
+    page.fill("[name='password']", password)
+    page.click("button:has-text('Log in')")
+
+
+class Pages:
+    main_page = pytest.mark.usefixtures("main_page")
+
+
+@pytest.fixture()
+def main_page(page, frontend_url, auth):
+    page.goto(frontend_url)

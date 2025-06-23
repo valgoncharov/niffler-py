@@ -2,11 +2,10 @@ import pytest
 
 from playwright.sync_api import Page
 
-from python_test.model.RegisterPage import (
-    LoginPage,
-    BasePage,
-    RegisterPage,
-)
+from python_test.model.RegisterPage import RegisterPage
+from python_test.model.LoginPage import LoginPage
+from python_test.model.SpendingPage import SpendingPage
+from python_test.model.BasePage import BasePage
 
 
 @pytest.fixture
