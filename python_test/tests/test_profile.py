@@ -37,17 +37,15 @@ class TestMenuApp:
 
         assert ProfilePage.should_be_friends_title
         assert ProfilePage.should_be_all_people_title
-        assert page.get_by_text(text="Add friend")
+        assert ProfilePage.should_be_add_friend_btn
 
     @allure.title("Добавление друга")
     def test_add_friend_page(self, page, app_user, auth_url):
         login_user_by_ui(page, app_user, auth_url)
         ProfilePage.click_menu_btn()
         ProfilePage.click_all_people_btn()
-        rows = page.get_by_role("row").filter(has=page.get_by_role("button", name="Add friend"))
-        rows.first.get_by_role("button", name="Add friend").click()
-        # page.get_by_role("button", name="Add friend").first.click()
-        assert page.get_by_text("Waiting...")
+        ProfilePage.click_add_friend_btn()
+        assert ProfilePage.should_be_waiting_process
 
     @allure.title("Процесс добавления друга")
     def test_add_friend_create_page(self, page, app_user, auth_url):
@@ -55,7 +53,5 @@ class TestMenuApp:
         login_user_by_ui(page, app_user, auth_url)
         ProfilePage.click_menu_btn()
         ProfilePage.click_all_people_btn()
-        rows = page.get_by_role("row").filter(has=page.get_by_role("button", name="Add friend"))
-        rows.first.get_by_role("button", name="Add friend").click()
-        # page.get_by_role("button", name="Add friend").first.click()
-        assert page.get_by_text("Waiting...")
+        ProfilePage.click_add_friend_btn()
+        assert ProfilePage.should_be_waiting_process

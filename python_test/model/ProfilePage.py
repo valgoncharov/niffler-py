@@ -48,3 +48,20 @@ class ProfilePage(Page):
     def should_be_no_data_users_title(self):
         self.get_by_text(text=Locators.NO_DATA_USERS).is_visible()
 
+    @allure.step("Нажать на кнопку добавить друга")
+    def click_add_friend_btn(self):
+        rows = self.get_by_role("row").filter(has=self.get_by_role("button", name="Add friend"))
+        rows.first.get_by_role("button", name="Add friend").click()
+        # page.get_by_role("button", name="Add friend").first.click()
+
+    @allure.step("Должно быть видно кнопку добавить друга")
+    def should_be_add_friend_btn(self):
+        self.get_by_text(text="Add friend")
+
+    @allure.step("Должно быть видно кнопку добавить друга")
+    def should_be_add_friend_btn(self):
+        self.get_by_text(text="Add friend")
+
+    @allure.step("Должно быть видно кнопку добавить друга")
+    def should_be_waiting_process(self):
+        self.get_by_text("Waiting...")
