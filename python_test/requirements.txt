@@ -2,3 +2,8 @@ pytest
 playwright
 pytest-playwright
 python-dotenv
+pydantic
+confluent_kafka==2.10.0
+Faker==37.1.0
+allure-pytest==2.14.0
+Requests==2.32.3

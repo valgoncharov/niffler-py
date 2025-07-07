@@ -4,12 +4,27 @@ import pytest
 from playwright.sync_api import Playwright, sync_playwright, Page
 from python_test.data_helpers.api_helpers import UserApiHelper
 from dotenv import load_dotenv
+from python_test.model.config import Envs
 from faker import Faker
+from python_test.clients.kafka_client import KafkaClient
 
 
 @pytest.fixture(scope="session")
 def envs():
     load_dotenv()
+    # maybe
+    return Envs(
+        frontend_url=os.getenv("FRONTEND_URL"),
+        gateway_url=os.getenv("GATEWAY_URL"),
+        auth_url=os.getenv('AUTH_URL'),
+        auth_secret=os.getenv("AUTH_SECRET"),
+        spend_db_url=os.getenv("SPEND_DB_URL"),
+        test_username=os.getenv("TEST_USERNAME"),
+        test_password=os.getenv("TEST_PASSWORD"),
+        kafka_address=os.getenv("KAFKA_ADDRESS"),
+        userdata_db_url=os.getenv('USERDATA_DB_URL'),
+        soap_address=os.getenv("SOAP_ADDRESS"),
+    )
 
 
 @pytest.fixture(scope="session")
@@ -25,6 +40,11 @@ def frontend_url(envs):
 @pytest.fixture(scope="session")
 def gateway_url(envs):
     return os.getenv("GATEWAY_URL")
+
+
+@pytest.fixture(scope="session")
+def kafka_address(envs) -> str:
+    return os.getenv("KAFKA_ADDRESS")
 
 # Поменял фикстуру
 # @pytest.fixture(scope="session")
@@ -92,3 +112,10 @@ class Pages:
 @pytest.fixture()
 def main_page(page, frontend_url, auth):
     page.goto(frontend_url)
+
+
+@pytest.fixture(scope="session")
+def kafka(envs):
+    """Взаимодействие с Kafka"""
+    with KafkaClient(envs) as k:
+        yield k
