@@ -81,12 +81,12 @@ class SpendsHttpClient:
         category_dict = {'name': category_name, 'username': self.user_name}
         response = self.session.post(
             f'{self.base_url_categories}/add', json=category_dict)
-        response.raise_for_status()
+        self.raise_for_status(response)
         return Category.model_validate(response.json())
 
     def get_categories(self) -> list[Category]:
         response = self.session.get(f'{self.base_url_categories}/all')
-        response.raise_for_status()
+        self.raise_for_status(response)
         return [Category.model_validate(item) for item in response.json()]
 
     def get_spend_by_id(self, spend_id: int):
@@ -98,16 +98,25 @@ class SpendsHttpClient:
 
     def get_spends(self) -> list[Spend]:
         response = self.session.get(f'{self.base_url_spends}/all')
-        response.raise_for_status()
+        self.raise_for_status(response)
         return [Spend.model_validate(item) for item in response.json()]
 
     def add_spends(self, spend: Spend) -> Spend:
         response = self.session.post(
             f'{self.base_url_spends}/add', json=spend.model_dump())
-        response.raise_for_status()
+        self.raise_for_status(response)
         return Spend.model_validate(response.json())
 
     def remove_spends(self, spend_ids: list[str]):
         url = urljoin(self.base_url_spends, 'remove')
         response = self.session.delete(url, params={'ids': spend_ids})
-        response.raise_for_status()
+        self.raise_for_status(response)
+
+    @staticmethod
+    def raise_for_status(response: requests.Response):
+        try:
+            response.raise_for_status()
+        except requests.HTTPError as e:
+            if response.status_code == 400:
+                e.add_note(response.text)
+                raise
