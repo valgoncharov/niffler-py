@@ -33,7 +33,8 @@ class TestApp:
         page.fill("[name='description']", "Go to rest")
         SpendingPage.click_save_btn()
 
-        locator = page.locator("div.MuiAlert-message >> text=New spending is successfully created")
+        locator = page.locator(
+            "div.MuiAlert-message >> text=New spending is successfully created")
         locator.wait_for(state="visible", timeout=5000)  # ждать до 5 сек
         assert locator.is_visible()
 
@@ -48,7 +49,8 @@ class TestApp:
         page.fill("[name='description']", "Go to rest")
         SpendingPage.click_save_btn()
 
-        locator = page.locator("div.MuiAlert-message >> text=New spending is successfully created")
+        locator = page.locator(
+            "div.MuiAlert-message >> text=New spending is successfully created")
         locator.wait_for(state="visible", timeout=5000)  # ждать до 5 сек
         assert locator.is_visible()
 
@@ -58,10 +60,12 @@ class TestApp:
         SpendingPage.click_new_spending_btn()
         SpendingPage.click_save_btn()
 
-        locator = page.locator(".input__helper-text >> text=Amount has to be not less then 0.01")
+        locator = page.locator(
+            ".input__helper-text >> text=Amount has to be not less then 0.01")
         assert locator.is_visible()
 
-        locator = page.locator(".input__helper-text >> text=Please choose category")
+        locator = page.locator(
+            ".input__helper-text >> text=Please choose category")
         assert locator.is_visible()
 
     @allure.title("Поиск по конкретным данным расходов")
@@ -78,7 +82,7 @@ class TestApp:
         SpendingPage.fill_search_field(data="test")
         # page.get_by_role("textbox", name="search").fill("test")
         # page.keyboard.press("Enter")
-        BasePage.should_be_data_title() # is_visible()?
+        BasePage.should_be_data_title()  # is_visible()?
 
     @allure.title("Удалить данные по расходу")
     def test_delete_spending(self, page, app_user, auth_url):
@@ -86,7 +90,8 @@ class TestApp:
         page.locator('tr.MuiTableRow-root[role="checkbox"]').first.click()
         SpendingPage.click_delete_btn()
         SpendingPage.click_delete_btn_on_banner()
-        banner = page.locator('div.MuiTypography-body1:has-text("Spendings succesfully deleted")')
+        banner = page.locator(
+            'div.MuiTypography-body1:has-text("Spendings succesfully deleted")')
         banner.wait_for(state="visible", timeout=5000)  # ждать до 5 сек
         assert banner.is_visible()
 
@@ -96,7 +101,8 @@ class TestApp:
         page.get_by_role("checkbox", name="select all rows").click()
         SpendingPage.click_delete_btn()
         SpendingPage.click_delete_btn_on_banner()
-        banner = page.locator('div.MuiTypography-body1:has-text("Spendings succesfully deleted")')
+        banner = page.locator(
+            'div.MuiTypography-body1:has-text("Spendings succesfully deleted")')
         banner.wait_for(state="visible", timeout=5000)  # ждать до 5 сек
         assert banner.is_visible()
         assert BasePage.should_be_data_title  # page.get_by_text(DATA_TITLE)
@@ -104,9 +110,7 @@ class TestApp:
 
 # TO DO
 class TestApi:
+
     def test_spending_action(self, frontend_url):
         SpendsHttpClient.add_spend('test', 'RUB', 10, 1)
         assert SpendsHttpClient.get_ids_all_spending('test', 100)
-
-
-

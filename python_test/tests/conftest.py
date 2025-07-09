@@ -4,6 +4,7 @@ import pytest
 from playwright.sync_api import Playwright, sync_playwright, Page
 from python_test.data_helpers.api_helpers import UserApiHelper
 from python_test.clients.spends_client import SpendsHttpClient
+from python_test.databases.spend_db import SpendDb
 from dotenv import load_dotenv
 from python_test.model.config import Envs
 from faker import Faker
@@ -96,14 +97,19 @@ def spends_client(envs):
     return SpendsHttpClient(envs.gateway_url, envs.auth_secret, envs.test_username)
 
 
+@pytest.fixture(scope="session")
+def spend_db(envs) -> SpendDb:
+    return SpendDb(envs.spend_db_url)
+
+
 @pytest.fixture(params=[])
-def category(spends_client, request):
+def category(spends_client, request, spend_db):
     category_name = request.param
-    current_categories = spends_client.get_categories()
-    category_names = [category.category for category in current_categories]
-    if category_name not in category_names:
-        spends_client.add_category(category_name)
-    return category_name
+    # category_names = [category.category for category in current_categories]
+    # if category_name not in category_names:
+    category = spends_client.add_category(category_name)
+    yield category.category
+    spend_db.delete_category(category.id)
 
 
 @pytest.fixture(params=[])
