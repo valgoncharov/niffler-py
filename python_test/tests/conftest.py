@@ -3,6 +3,7 @@ import os
 import pytest
 from playwright.sync_api import Playwright, sync_playwright, Page
 from python_test.data_helpers.api_helpers import UserApiHelper
+from python_test.clients.spends_client import SpendsHttpClient
 from dotenv import load_dotenv
 from python_test.model.config import Envs
 from faker import Faker
@@ -54,8 +55,10 @@ def kafka_address(envs) -> str:
 
 @pytest.fixture(scope='session')
 def app_user(envs, auth_url: str) -> tuple[str, str]:
-    user_name, password = os.getenv("TEST_USERNAME"), os.getenv("TEST_PASSWORD")
-    UserApiHelper(auth_url).create_user(user_name=user_name, user_password=password)
+    user_name, password = os.getenv(
+        "TEST_USERNAME"), os.getenv("TEST_PASSWORD")
+    UserApiHelper(auth_url).create_user(
+        user_name=user_name, user_password=password)
     return user_name, password
 
 
@@ -86,6 +89,30 @@ def browser(playwright):
     browser = playwright.chromium.launch(headless=False)
     yield browser
     browser.close()
+
+
+@pytest.fixture(scope="session")
+def spends_client(envs):
+    return SpendsHttpClient(envs.gateway_url, envs.auth_secret, envs.test_username)
+
+
+@pytest.fixture(params=[])
+def category(spends_client, request):
+    category_name = request.param
+    current_categories = spends_client.get_categories()
+    category_names = [category.category for category in current_categories]
+    if category_name not in category_names:
+        spends_client.add_category(category_name)
+    return category_name
+
+
+@pytest.fixture(params=[])
+def spends(spends_client, request):
+    test_spend = spends_client.add_spends(request.param)
+    yield test_spend
+    all_spends = spends_client.get_spends()
+    if test_spend.id in [spend.id for spend in all_spends]:
+        spends_client.remove_spends([test_spend.id])
 
 
 def login_user_by_ui(page, app_user, auth_url):

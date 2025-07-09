@@ -5,7 +5,7 @@ from confluent_kafka import TopicPartition
 from confluent_kafka.admin import AdminClient
 from confluent_kafka.cimpl import Consumer, Producer
 
-from python_test.model.db.user import UserName
+from python_test.model.db.spend import UserName
 from python_test.utils.waiters import wait_until_timeout
 
 
@@ -15,7 +15,8 @@ class KafkaClient:
     def __init__(self, envs, client_id: str = 'qa', group_id: str = 'qa'):
         self.server = envs.kafka_address
         self.admin = AdminClient({"bootstrap.servers": f"{self.server}:9092"})
-        self.producer = Producer({"bootstrap.servers": f"{self.server}:9092", })
+        self.producer = Producer(
+            {"bootstrap.servers": f"{self.server}:9092", })
         self.consumer = Consumer(
             {
                 "bootstrap.servers": f"{self.server}:9093",
@@ -57,7 +58,8 @@ class KafkaClient:
         """Вернуть последнюю позицию партиции"""
         partition = TopicPartition(topic, partition_id)
         try:
-            low, high = self.consumer.get_watermark_offsets(partition, timeout=10)
+            low, high = self.consumer.get_watermark_offsets(
+                partition, timeout=10)
             return high
         except Exception as err:
             logging.error("probably no such topic: %s: %s", topic, err)
@@ -69,10 +71,13 @@ class KafkaClient:
 
     def subscribe_listen_new_offsets(self, topic):
         self.consumer.subscribe([topic])
-        p_ids = self.consumer.list_topics(topic).topics[topic].partitions.keys()
-        partitions_offsets_event = {k: self.get_last_offset(topic, k) for k in p_ids}
+        p_ids = self.consumer.list_topics(
+            topic).topics[topic].partitions.keys()
+        partitions_offsets_event = {
+            k: self.get_last_offset(topic, k) for k in p_ids}
         logging.info(f'{topic} offsets: {partitions_offsets_event}')
-        topic_partitions = [TopicPartition(topic, k, v) for k, v in partitions_offsets_event.items()]
+        topic_partitions = [TopicPartition(
+            topic, k, v) for k, v in partitions_offsets_event.items()]
         return topic_partitions
 
 # Checking (sha)
@@ -80,12 +85,15 @@ class KafkaClient:
         if err is not None:
             logging.info(f"Ошибка при отправке сообщения: {err}")
         else:
-            print(f"Сообщение отправлено в {msg.topic()} [{msg.partition()}] с смещением {msg.offset()}")
+            print(
+                f"Сообщение отправлено в {msg.topic()} [{msg.partition()}] с смещением {msg.offset()}")
 
     def send_message(self, topic: str, username: str):
         self.producer.produce(topic,
-                              json.dumps(UserName(username=username).model_dump()).encode("utf-8"),
+                              json.dumps(UserName(username=username).model_dump()).encode(
+                                  "utf-8"),
                               on_delivery=self.delivery_report,
-                              headers={"__TypeId__": "guru.qa.niffler.model.UserJson"},
+                              headers={
+                                  "__TypeId__": "guru.qa.niffler.model.UserJson"},
                               )
         self.producer.flush()
