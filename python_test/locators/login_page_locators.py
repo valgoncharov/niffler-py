@@ -5,7 +5,7 @@ class LoginPageLocators:
     STATISTICS_TITLE = "text=Statistics"
     DATA_TITLE = "text=There are no spendings"
     WRONG_TITLE = "text=Неверные учетные данные пользователя"
-    # Errors
+    # Errors/Alerts
     USERNAME_LENGTH = "Allowed username length should be from 3 to 50 characters"
     PASSWORD_LENGTH = "Allowed password length should be from 3 to 12 characters"
     PASSWORD_SHOULD = "Passwords should be equal"
