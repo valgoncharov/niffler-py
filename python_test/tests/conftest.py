@@ -27,27 +27,6 @@ def envs():
         userdata_db_url=os.getenv('USERDATA_DB_URL'),
         soap_address=os.getenv("SOAP_ADDRESS"),
     )
-
-
-@pytest.fixture(scope="session")
-def auth_url(envs):
-    return os.getenv("AUTH_URL")
-
-
-@pytest.fixture(scope="session")
-def frontend_url(envs):
-    return os.getenv("FRONTEND_URL")
-
-
-@pytest.fixture(scope="session")
-def gateway_url(envs):
-    return os.getenv("GATEWAY_URL")
-
-
-@pytest.fixture(scope="session")
-def kafka_address(envs) -> str:
-    return os.getenv("KAFKA_ADDRESS")
-
 # Поменял фикстуру
 # @pytest.fixture(scope="session")
 # def app_user(envs):
