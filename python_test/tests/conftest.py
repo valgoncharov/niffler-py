@@ -34,10 +34,10 @@ def envs():
 
 
 @pytest.fixture(scope='session')
-def app_user(envs, auth_url: str) -> tuple[str, str]:
+def app_user(envs: Envs) -> tuple[str, str]:
     user_name, password = os.getenv(
         "TEST_USERNAME"), os.getenv("TEST_PASSWORD")
-    UserApiHelper(auth_url).create_user(
+    UserApiHelper(envs.auth_url).create_user(
         user_name=user_name, user_password=password)
     return user_name, password
 
@@ -82,7 +82,7 @@ def spend_db(envs) -> SpendDb:
 
 
 @pytest.fixture(params=[])
-def category(spends_client, request, spend_db):
+def category(spends_client: SpendsHttpClient, request, spend_db: SpendDb):
     category_name = request.param
     # category_names = [category.category for category in current_categories]
     # if category_name not in category_names:
@@ -92,7 +92,7 @@ def category(spends_client, request, spend_db):
 
 
 @pytest.fixture(params=[])
-def spends(spends_client, request):
+def spends(spends_client: SpendsHttpClient, request):
     test_spend = spends_client.add_spends(request.param)
     yield test_spend
     all_spends = spends_client.get_spends()
@@ -100,18 +100,18 @@ def spends(spends_client, request):
         spends_client.remove_spends([test_spend.id])
 
 
-def login_user_by_ui(page, app_user, auth_url):
+def login_user_by_ui(page: Page, app_user, envs: Envs):
     username, password = app_user
-    page.goto(f"{auth_url}login")
+    page.goto(f"{envs.auth_url}login")
     page.fill("[name='username']", username)
     page.fill("[name='password']", password)
     page.click("button:has-text('Log in')")
 
 
 @pytest.fixture()
-def auth(page, frontend_url, app_user):
+def auth(page, envs: Envs, app_user):
     username, password = app_user
-    page.goto(f"{frontend_url}login")
+    page.goto(f"{envs.frontend_url}login")
     page.fill("[name='username']", username)
     page.fill("[name='password']", password)
     page.click("button:has-text('Log in')")
@@ -127,7 +127,7 @@ def main_page(page, frontend_url, auth):
 
 
 @pytest.fixture(scope="session")
-def kafka(envs):
+def kafka(envs: Envs):
     """Взаимодействие с Kafka"""
     with KafkaClient(envs) as k:
         yield k
