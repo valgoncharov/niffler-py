@@ -6,10 +6,6 @@ from python_test.model.SpendingPage import SpendingPage
 from conftest import Pages
 import allure
 
-# Fields
-AMOUNT_FIELD = "[name='amount']"
-CATEGORY_FIELD = "[name='category']"
-
 
 class TestApp:
 
@@ -28,9 +24,9 @@ class TestApp:
     def test_add_new_spending_rub(self, page, app_user, auth_url):
         login_user_by_ui(page, app_user, auth_url)
         SpendingPage.click_new_spending_btn()
-        page.fill(AMOUNT_FIELD, "10")
-        page.fill(CATEGORY_FIELD, "rest")
-        page.fill("[name='description']", "Go to rest")
+        SpendingPage.fill_amount_field("10")
+        SpendingPage.fill_category_field("rest")
+        SpendingPage.fill_description_field("Go to rest")
         SpendingPage.click_save_btn()
 
         locator = page.locator(
@@ -42,11 +38,11 @@ class TestApp:
     def test_add_new_spending_usd(self, page, app_user, auth_url):
         login_user_by_ui(page, app_user, auth_url)
         SpendingPage.click_new_spending_btn()
-        page.fill(AMOUNT_FIELD, "10")
+        SpendingPage.fill_amount_field("10")
         SpendingPage.click_currency_btn()
         page.get_by_role("option", name="USD").click()
-        page.fill(CATEGORY_FIELD, "rest")
-        page.fill("[name='description']", "Go to rest")
+        SpendingPage.fill_category_field("rest")
+        SpendingPage.fill_description_field("Go to rest")
         SpendingPage.click_save_btn()
 
         locator = page.locator(
@@ -72,16 +68,11 @@ class TestApp:
     def test_search_by_date_spending(self, page, app_user, auth_url):
         login_user_by_ui(page, app_user, auth_url)
         SpendingPage.fill_search_field(data="rest")
-        # page.get_by_role("textbox", name="search").fill("rest")
-        # page.keyboard.press("Enter")
-        # assert page.locator('tr:has-text("rest")')
 
     @allure.title("Поиск несуществующих данных по расходам")
     def test_search_not_exist_spending(self, page, app_user, auth_url):
         login_user_by_ui(page, app_user, auth_url)
         SpendingPage.fill_search_field(data="test")
-        # page.get_by_role("textbox", name="search").fill("test")
-        # page.keyboard.press("Enter")
         BasePage.should_be_data_title()  # is_visible()?
 
     @allure.title("Удалить данные по расходу")

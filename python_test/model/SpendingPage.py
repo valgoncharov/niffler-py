@@ -34,5 +34,16 @@ class SpendingPage(Page):
         self.keyboard.press("Enter")
         assert self.locator('tr:has-text({data})')
 
+    @allure.step("Ввести данные в поле описание")
+    def fill_description_field(self, description: str):
+        self.locator(Locators.DESCRIPTION_FIELD).fill(description)
+
+    @allure.step("Ввести данные в поле категория расходов")
+    def fill_category_field(self, category_data: str):
+        self.locator(Locators.CATEGORY_FIELD).fill(category_data)
+
+    @allure.step("Ввести данные в поле количество")
+    def fill_amount_field(self, amount: str):
+        self.locator(Locators.AMOUNT_FIELD).fill(amount)
 
 

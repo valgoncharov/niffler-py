@@ -10,3 +10,4 @@ class SpendingPageLocators:
     # Fields
     AMOUNT_FIELD = "[name='amount']"
     CATEGORY_FIELD = "[name='category']"
+    DESCRIPTION_FIELD = "[name='description']"
