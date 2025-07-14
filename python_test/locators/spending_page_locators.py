@@ -21,4 +21,3 @@ class SpendingPageLocators:
 
     # Checkbox
     CHECKBOX_ALL = "checkbox"
-
