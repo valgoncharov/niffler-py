@@ -5,6 +5,7 @@ import pytest
 from pytest import Item, FixtureRequest, FixtureDef
 from allure_commons.reporter import AllureReporter
 from allure_pytest.listener import AllureListener
+from allure_commons.types import AttachmentType
 from playwright.sync_api import Playwright, sync_playwright, Page
 from python_test.data_helpers.api_helpers import UserApiHelper
 from python_test.clients.spends_client import SpendsHttpClient
@@ -36,10 +37,9 @@ def pytest_fixture_setup(fixturedef: FixtureDef, request: FixtureRequest):
 
 
 @pytest.fixture(scope="session")
-def envs():
+def envs() -> Envs:
     load_dotenv()
-    # maybe
-    return Envs(
+    envs_instance = Envs(
         frontend_url=os.getenv("FRONTEND_URL"),
         gateway_url=os.getenv("GATEWAY_URL"),
         auth_url=os.getenv('AUTH_URL'),
@@ -51,10 +51,8 @@ def envs():
         userdata_db_url=os.getenv('USERDATA_DB_URL'),
         soap_address=os.getenv("SOAP_ADDRESS"),
     )
-# Поменял фикстуру
-# @pytest.fixture(scope="session")
-# def app_user(envs):
-#     return os.getenv("TEST_USERNAME"), os.getenv("TEST_PASSWORD")
+    allure.attach(envs_instance.model_dump_json(indent=2), name="envs.json", attachment_type=AttachmentType.JSON)
+    return envs_instance
 
 
 @pytest.fixture(scope='session')
