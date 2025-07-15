@@ -1,6 +1,8 @@
 import os
+import allure
 
 import pytest
+from pytest import Item, FixtureRequest, FixtereDef
 from playwright.sync_api import Playwright, sync_playwright, Page
 from python_test.data_helpers.api_helpers import UserApiHelper
 from python_test.clients.spends_client import SpendsHttpClient
@@ -9,6 +11,17 @@ from dotenv import load_dotenv
 from python_test.model.config import Envs
 from faker import Faker
 from python_test.clients.kafka_client import KafkaClient
+
+
+@pytest.hookimpl(hookwrapper=True, trylast=True)
+def pytest_runtest_call(item: Item):
+    yield
+    allure.dynamic.title(" ".join(item.name.split("_")[1:]).title())
+
+
+@pytest.hookimpl(hookwrapper=True, trylast=True)
+def pytest_fixture_setup(fixturedef: FixtereDef, request: FixtureRequest):
+    print()
 
 
 @pytest.fixture(scope="session")
