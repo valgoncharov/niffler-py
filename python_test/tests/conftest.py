@@ -2,7 +2,9 @@ import os
 import allure
 
 import pytest
-from pytest import Item, FixtureRequest, FixtereDef
+from pytest import Item, FixtureRequest, FixtureDef
+from allure_commons.reporter import AllureReporter
+from allure_pytest.listener import AllureListener
 from playwright.sync_api import Playwright, sync_playwright, Page
 from python_test.data_helpers.api_helpers import UserApiHelper
 from python_test.clients.spends_client import SpendsHttpClient
@@ -13,6 +15,11 @@ from faker import Faker
 from python_test.clients.kafka_client import KafkaClient
 
 
+def allure_logger(config) -> AllureReporter:
+    listener: AllureListener = config.pluginmanager.get_plugin("allure_listener")
+    return listener.allure_logger
+
+
 @pytest.hookimpl(hookwrapper=True, trylast=True)
 def pytest_runtest_call(item: Item):
     yield
@@ -20,8 +27,12 @@ def pytest_runtest_call(item: Item):
 
 
 @pytest.hookimpl(hookwrapper=True, trylast=True)
-def pytest_fixture_setup(fixturedef: FixtereDef, request: FixtureRequest):
-    print()
+def pytest_fixture_setup(fixturedef: FixtureDef, request: FixtureRequest):
+    yield
+    logger = allure_logger(request.config)
+    item = logger.get_last_item()
+    scope_letter = fixturedef.scope[0].upper()
+    item.name = f"[{scope_letter}] " + " ".join(fixturedef.argname.split("_")).title()
 
 
 @pytest.fixture(scope="session")
