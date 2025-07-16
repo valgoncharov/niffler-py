@@ -4,6 +4,7 @@ class Epic:
 
 class Feature:
     log_in = "Авторизация пользователя"
+    log_out = "Выход пользователя"
     sign_up = "Регистрация пользователя"
     spending = "Расходы"
     search = "Поиск"

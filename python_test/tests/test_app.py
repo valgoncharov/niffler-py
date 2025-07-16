@@ -1,5 +1,6 @@
 import pytest
 from python_test.tests.conftest import login_user_by_ui
+from python_test.report_helper import Epic, Feature, Story
 from python_test.data_helpers.api_helpers import SpendsHttpClient
 from python_test.model.BasePage import BasePage
 from python_test.model.SpendingPage import SpendingPage
@@ -11,9 +12,11 @@ from python_test.marks import TestData
 import allure
 from datetime import datetime, timedelta
 
-# Заменить envs
+# TO DO Заменить envs
 
 
+@allure.story(Epic)
+@allure.story(Story.positive_cases)
 class TestApp:
 
     @pytest.fixture(scope='class')
@@ -27,6 +30,7 @@ class TestApp:
     def test_spending_title_exists(self, page, app_user, envs):
         assert BasePage.should_be_history_title
 
+    @allure.feature(Feature.spending)
     @allure.title("Добавление нового расхода в рублях")
     def test_add_new_spending_rub(self, page, app_user, auth_url):
         login_user_by_ui(page, app_user, auth_url)
@@ -38,6 +42,7 @@ class TestApp:
 
         SpendingPage.should_be_success_created_spending_banner()
 
+    @allure.feature(Feature.spending)
     @allure.title("Добавление нового расхода в долларах")
     def test_add_new_spending_usd(self, page, app_user, auth_url):
         login_user_by_ui(page, app_user, auth_url)
@@ -51,6 +56,7 @@ class TestApp:
 
         SpendingPage.should_be_success_created_spending_banner()
 
+    @allure.feature(Feature.spending)
     @allure.title("Добавление пустых данных в расходах")
     def test_add_empty_spending(self, page, app_user, auth_url):
         login_user_by_ui(page, app_user, auth_url)
@@ -60,11 +66,13 @@ class TestApp:
         SpendingPage.should_be_amount_alert()
         SpendingPage.should_be_category_choose_alert()
 
+    @allure.feature(Feature.search)
     @allure.title("Поиск по конкретным данным расходов")
     def test_search_by_date_spending(self, page, app_user, auth_url):
         login_user_by_ui(page, app_user, auth_url)
         SpendingPage.fill_search_field(data="rest")
 
+    @allure.feature(Feature.search)
     @allure.title("Поиск несуществующих данных по расходам")
     def test_search_not_exist_spending(self, page, app_user, auth_url):
         login_user_by_ui(page, app_user, auth_url)
@@ -72,6 +80,7 @@ class TestApp:
 
         assert BasePage.should_be_data_title()
 
+    @allure.feature(Feature.spending)
     @allure.title("Удалить данные по расходу")
     def test_delete_spending(self, page, app_user, auth_url):
         login_user_by_ui(page, app_user, auth_url)
@@ -80,6 +89,7 @@ class TestApp:
         SpendingPage.click_delete_btn_on_banner()
         SpendingPage.should_be_success_deleted_spending_banner()
 
+    @allure.feature(Feature.spending)
     @allure.title("Удалить все записи по расходам")
     def test_delete_all_spending(self, page, app_user, auth_url):
         login_user_by_ui(page, app_user, auth_url)
@@ -90,6 +100,7 @@ class TestApp:
 
         assert BasePage.should_be_data_title
 
+    @allure.feature(Feature.spending)
     @TestData.spend({
         'category': 'test_db',
         'amount': 100,
@@ -105,6 +116,7 @@ class TestApp:
         assert spend_from_db.currency == spend.currency
         assert spend_from_db.description == spend.description
 
+    @allure.feature(Feature.category)
     @TestData.category({
         'category_name': 'test_db',
         'archived': False,
@@ -116,6 +128,7 @@ class TestApp:
         assert category_from_db.name == category.name
         assert category_from_db.username == envs.test_username
 
+    @allure.feature(Feature.category)
     @TestData.category({
         'category_name': 'category_db_after_update',
         'archived': False,
@@ -169,6 +182,7 @@ class TestApp:
 
 
 # TO DO
+@allure.story(Story.api)
 class TestApi:
 
     def test_spending_action(self):
