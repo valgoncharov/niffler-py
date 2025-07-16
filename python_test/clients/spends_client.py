@@ -3,7 +3,10 @@ from datetime import datetime, timezone
 from http import HTTPStatus
 from typing import Literal
 from urllib.parse import urljoin
-
+import allure
+from allure_commons.types import AttachmentType
+from requests import Response
+from requests_toolbelt.utils.dump import dump_response
 import requests
 
 from python_test.model.db.spend import Category, Spend
@@ -24,6 +27,12 @@ class SpendsHttpClient:
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
         })
+        self.session.hooks["response"].append(self.attach_response)
+
+    @staticmethod
+    def attach_response(response: Response, *args, **kwargs):
+        attachment_name = response.request.method + " " + response.request.url
+        allure.attach(dump_response(response), attachment_name, attachment_type=AttachmentType.TEXT)
 
     def add_spend(self, category: str, amount: int, currency='RUB', desc: str = '',
                   date: datetime = None) -> int:
