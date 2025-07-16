@@ -11,6 +11,8 @@ from python_test.marks import TestData
 import allure
 from datetime import datetime, timedelta
 
+# Заменить envs
+
 
 class TestApp:
 
@@ -22,7 +24,7 @@ class TestApp:
         spends_client.remove_all_spending()
 
     @Pages.main_page
-    def test_spending_title_exists(self, page, app_user, frontend_url):
+    def test_spending_title_exists(self, page, app_user, envs):
         assert BasePage.should_be_history_title
 
     @allure.title("Добавление нового расхода в рублях")

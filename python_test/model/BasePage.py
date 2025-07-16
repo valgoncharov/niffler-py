@@ -12,10 +12,10 @@ class BasePage(Page):
     def navigate(self):
         self.page.goto()
 
-    @allure.step("Должен быть загаловок статистики")
+    @allure.step("Должен быть загаловок Истории")
     def should_be_history_title(self):
         self.text_content(Locators.HISTORY_TITLE)
 
-    @allure.step("Должен быть загаловок статистики")
+    @allure.step("Должен быть загаловок Данных")
     def should_be_data_title(self):
         self.text_content(Locators.DATA_TITLE)
