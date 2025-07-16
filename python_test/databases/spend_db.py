@@ -1,5 +1,8 @@
 from typing import Sequence
-from sqlalchemy import create_engine, Engine
+
+import allure
+from allure_commons.types import AttachmentType
+from sqlalchemy import create_engine, Engine, event
 from sqlmodel import Session, select
 from python_test.model.db.spend import Category, Spend
 
@@ -10,6 +13,13 @@ class SpendDb:
 
     def __init__(self, db_url: str):
         self.engine = create_engine(db_url, pool_size=10, max_overflow=20)
+        event.listen(self.engine, "do_execute", fn=self.attach_sql)
+
+    @staticmethod
+    def attach_sql(cursor, statement, parameters, context):
+        statement_with_params = statement % parameters
+        name = statement.split(" ")[0]
+        allure.attach(statement_with_params, attachment_type=AttachmentType)
 
     def get_user_categories(self, username: str) -> Sequence[Category]:
         with Session(self.engine) as session:

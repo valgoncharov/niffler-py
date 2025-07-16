@@ -2,7 +2,12 @@ import os
 import allure
 
 import pytest
-from pytest import Item, FixtureRequest, FixtureDef
+try:
+    from _pytest.fixtures import FixtureDef
+    from _pytest.python import FixtureRequest
+    from _pytest.nodes import Item
+except ImportError:
+    from pytest import Item, FixtureDef, FixtureRequest
 from allure_commons.reporter import AllureReporter
 from allure_pytest.listener import AllureListener
 from allure_commons.types import AttachmentType
@@ -16,24 +21,63 @@ from faker import Faker
 from python_test.clients.kafka_client import KafkaClient
 
 
-def allure_logger(config) -> AllureReporter:
-    listener: AllureListener = config.pluginmanager.get_plugin("allure_listener")
-    return listener.allure_logger
+# def pytest_configure(config):
+#     # Убедимся, что плагин allure зарегистрирован
+#     if not config.pluginmanager.has_plugin("allure_listener"):
+#         listener = AllureListener(config)
+#         config.pluginmanager.register(listener, "allure_listener")
 
 
-@pytest.hookimpl(hookwrapper=True, trylast=True)
+# def allure_logger(config) -> AllureReporter:
+#     listener: AllureListener = config.pluginmanager.get_plugin("allure_listener")
+#     return listener.allure_logger
+
+# def allure_logger(config) -> AllureReporter:
+#     listener = config.pluginmanager.get_plugin("allure_listener")
+#     if listener is None:
+#         # Если плагин не зарегистрирован, регистрируем его
+#         listener = AllureListener(config)
+#         config.pluginmanager.register(listener, "allure_listener")
+#     return listener.allure_logger
+
+# def allure_logger(config) -> AllureReporter:
+#     listener = config.pluginmanager.get_plugin("allure_listener")
+#     if listener is None:
+#         raise RuntimeError("Allure listener not registered. Check allure-pytest installation")
+#     return listener.allure_logger
+
+#
+# @pytest.hookimpl(hookwrapper=True, trylast=True)
+# def pytest_runtest_call(item: Item):
+#     yield
+#     allure.dynamic.title(" ".join(item.name.split("_")[1:]).title())
+#
+#
+# @pytest.hookimpl(hookwrapper=True, trylast=True)
+# def pytest_fixture_setup(fixturedef: FixtureDef, request: FixtureRequest):
+#     yield
+#     logger = allure_logger(request.config)
+#     item = logger.get_last_item()
+#     if item:
+#         scope_letter = fixturedef.scope[0].upper()
+#         item.name = f"[{scope_letter}] " + " ".join(fixturedef.argname.split("_")).title()
+@pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_call(item: Item):
     yield
-    allure.dynamic.title(" ".join(item.name.split("_")[1:]).title())
+    try:
+        allure.dynamic.title(" ".join(item.name.split("_")[1:]).title())
+    except Exception as e:
+        print(f"Could not set Allure title: {e}")
 
 
-@pytest.hookimpl(hookwrapper=True, trylast=True)
+@pytest.hookimpl(hookwrapper=True)
 def pytest_fixture_setup(fixturedef: FixtureDef, request: FixtureRequest):
     yield
-    logger = allure_logger(request.config)
-    item = logger.get_last_item()
-    scope_letter = fixturedef.scope[0].upper()
-    item.name = f"[{scope_letter}] " + " ".join(fixturedef.argname.split("_")).title()
+    try:
+        with allure.step(f"Fixture {fixturedef.argname}"):
+            pass
+    except Exception as e:
+        print(f"Could not create Allure step: {e}")
 
 
 @pytest.fixture(scope="session")
