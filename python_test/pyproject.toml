@@ -1,0 +1,43 @@
+[project]
+name = "python-test"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "valgoncharov",email = "99090572+valgoncharov@users.noreply.github.com"}
+]
+readme = "README.md"
+requires-python = ">=3.9,<3.12"  # Более точное указание версии Python
+dependencies = [
+    "playwright>=1.52.0,<2.0.0",
+    "pytest>=7.0.0,<8.0.0",  # Более гибкая версия pytest
+    "pytest-playwright>=0.7.0,<0.8.0",
+    "pytest-xdist>=3.6.1,<4.0.0",
+    "python-dotenv>=1.0.0",  # Обновленная версия вместо устаревшего dotenv
+    "allure-pytest>=2.14.3,<3.0.0",
+    "faker>=37.4.2,<38.0.0",
+    "pydantic>=2.11.7,<3.0.0",
+    "sqlmodel>=0.0.24,<0.0.25",
+    "sqlalchemy>=2.0.41,<3.0.0",
+
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+pylint = "^3.3.7"
+mypy = "^1.15.0"
+pytest-cov = "^4.1.0"  # Добавлен для покрытия кода тестами
+
+[tool.pytest.ini_options]
+addopts = [
+    "--alluredir=allure-results",
+    "--clean-alluredir",
+    "-v",
+    "-n auto"  # Используем pytest-xdist для параллельного запуска
+]
+testpaths = ["tests"]
+python_files = "test_*.py"
