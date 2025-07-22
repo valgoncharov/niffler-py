@@ -1,14 +1,15 @@
 import json
 import logging
-import pytest
 
 import allure
 from faker import Faker
-from allure import step, epic, story, suite
+from python_test.data_helpers.api_helpers import UserApiHelper
+from python_test.model.db.user import UserName
+from python_test.report_helper import Epic, Story
 
 
-@allure.epic()
-@allure.feature()
+@allure.epic(Epic.app)
+@allure.story(Story.kafka)
 class TestKafka:
 
     @allure.title("Проверить что есть сообщение в кафке после успешной регистрации пользователя")
@@ -19,8 +20,9 @@ class TestKafka:
         topic_partitions = kafka.subscribe_listen_new_offsets("users")
 
         with allure.step('Зарегистрировать нового пользователя'):
-        result = auth_client.register(username, password)
-        assert result.status_code == 201
+            auth_client = UserApiHelper(envs)
+            result = auth_client.create_user(username, password)
+            assert result.status_code == 201
 
         event = kafka.log_msg_and_json(topic_partitions)
 

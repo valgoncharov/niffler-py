@@ -4,10 +4,6 @@ from datetime import datetime
 from typing import Optional
 
 
-class UserName(BaseModel):
-    username: str
-
-
 class Category(SQLModel, table=True):
     id: str = Field(default=None, primary_key=True)
     name: str

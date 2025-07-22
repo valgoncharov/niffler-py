@@ -5,7 +5,7 @@ from confluent_kafka import TopicPartition
 from confluent_kafka.admin import AdminClient
 from confluent_kafka.cimpl import Consumer, Producer
 
-from python_test.model.db.spend import UserName
+from python_test.model.db.user import UserName
 from python_test.utils.waiters import wait_until_timeout
 
 
@@ -80,7 +80,6 @@ class KafkaClient:
             topic, k, v) for k, v in partitions_offsets_event.items()]
         return topic_partitions
 
-# Checking (sha)
     def delivery_report(self, err, msg):
         if err is not None:
             logging.info(f"Ошибка при отправке сообщения: {err}")

@@ -2,6 +2,7 @@ import logging
 import allure
 from allure_commons.types import AttachmentType
 from requests import Response
+from requests import Session
 from requests_toolbelt.utils.dump import dump_response
 from datetime import datetime, timezone
 from http import HTTPStatus
@@ -28,17 +29,18 @@ class UserApiHelper:
 
     @allure.step("Создание пользователя {user_name}")
     def create_user(self, user_name: str, user_password: str):
-        with requests.Session() as session:
-            _resp = session.get(self.auth_url)
-            data = {'username': user_name,
-                    'password': user_password,
-                    'passwordSubmit': user_password,
-                    '_csrf': _resp.cookies['XSRF-TOKEN']}
-            response = session.post(self.auth_url, data)
+        # with requests.Session() as session:
+        _resp = self.session.get(self.auth_url)
+        data = {'username': user_name,
+                'password': user_password,
+                'passwordSubmit': user_password,
+                '_csrf': _resp.cookies['XSRF-TOKEN']}
+        response = self.session.post(self.auth_url, data)
         if response.status_code == HTTPStatus.CREATED:
             logging.info(f'Пользователь {user_name} зарегистрирован')
         else:
             logging.info(f'Пользователь {user_name} существует')
+            return response
 
 
 class SpendsHttpClient:

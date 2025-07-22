@@ -8,8 +8,6 @@ try:
     from _pytest.nodes import Item
 except ImportError:
     from pytest import Item, FixtureDef, FixtureRequest
-from allure_commons.reporter import AllureReporter
-from allure_pytest.listener import AllureListener
 from allure_commons.types import AttachmentType
 from playwright.sync_api import Playwright, sync_playwright, Page
 from python_test.data_helpers.api_helpers import UserApiHelper
@@ -21,46 +19,6 @@ from faker import Faker
 from python_test.clients.kafka_client import KafkaClient
 
 
-# def pytest_configure(config):
-#     # Убедимся, что плагин allure зарегистрирован
-#     if not config.pluginmanager.has_plugin("allure_listener"):
-#         listener = AllureListener(config)
-#         config.pluginmanager.register(listener, "allure_listener")
-
-
-# def allure_logger(config) -> AllureReporter:
-#     listener: AllureListener = config.pluginmanager.get_plugin("allure_listener")
-#     return listener.allure_logger
-
-# def allure_logger(config) -> AllureReporter:
-#     listener = config.pluginmanager.get_plugin("allure_listener")
-#     if listener is None:
-#         # Если плагин не зарегистрирован, регистрируем его
-#         listener = AllureListener(config)
-#         config.pluginmanager.register(listener, "allure_listener")
-#     return listener.allure_logger
-
-# def allure_logger(config) -> AllureReporter:
-#     listener = config.pluginmanager.get_plugin("allure_listener")
-#     if listener is None:
-#         raise RuntimeError("Allure listener not registered. Check allure-pytest installation")
-#     return listener.allure_logger
-
-#
-# @pytest.hookimpl(hookwrapper=True, trylast=True)
-# def pytest_runtest_call(item: Item):
-#     yield
-#     allure.dynamic.title(" ".join(item.name.split("_")[1:]).title())
-#
-#
-# @pytest.hookimpl(hookwrapper=True, trylast=True)
-# def pytest_fixture_setup(fixturedef: FixtureDef, request: FixtureRequest):
-#     yield
-#     logger = allure_logger(request.config)
-#     item = logger.get_last_item()
-#     if item:
-#         scope_letter = fixturedef.scope[0].upper()
-#         item.name = f"[{scope_letter}] " + " ".join(fixturedef.argname.split("_")).title()
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_call(item: Item):
     yield
@@ -150,8 +108,6 @@ def spend_db(envs) -> SpendDb:
 @pytest.fixture(params=[])
 def category(spends_client: SpendsHttpClient, request, spend_db: SpendDb):
     category_name = request.param
-    # category_names = [category.category for category in current_categories]
-    # if category_name not in category_names:
     category = spends_client.add_category(category_name)
     yield category.category
     spend_db.delete_category(category.id)
@@ -166,7 +122,7 @@ def spends(spends_client: SpendsHttpClient, request):
         spends_client.remove_spends([test_spend.id])
 
 
-def login_user_by_ui(page: Page, app_user, envs: Envs):
+def login_user_by_ui(page, app_user, envs: Envs):
     username, password = app_user
     page.goto(f"{envs.auth_url}login")
     page.fill("[name='username']", username)

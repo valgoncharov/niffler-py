@@ -17,9 +17,8 @@ class TestAuth:
 
     @allure.feature(Feature.sign_up)
     @allure.title("Создание нового аккаунта пользователя")
-    def test_create_user(self, page: Page, frontend_url, app_user, ):
-        username, password = app_user
-        page.goto(f"{frontend_url}login")
+    def test_create_user(self, page: Page, envs):
+        page.goto(f"{envs.frontend_url}login")
         LoginPage.click_create_account_btn()
         LoginPage.fill_user_field()
         LoginPage.fill_password_field()
@@ -31,9 +30,8 @@ class TestAuth:
 
     @allure.feature(Feature.sign_up)
     @allure.title("Создание аккаунта существующего пользователя")
-    def test_create_exist_user(self, page: Page, frontend_url, app_user):
-        username, password = app_user
-        page.goto(f"{frontend_url}login")
+    def test_create_exist_user(self, page: Page, envs):
+        page.goto(f"{envs.frontend_url}login")
         LoginPage.click_create_account_btn()
         LoginPage.fill_account_data()
         LoginPage.click_sign_up_btn()
@@ -65,9 +63,9 @@ class TestNegativeAuth:
 
     @allure.feature(Feature.log_in)
     @allure.title("Вход несуществующим пользователем")
-    def test_login_by_not_exist_user(self, page: Page, frontend_url, fake_app_user):
+    def test_login_by_not_exist_user(self, page: Page, envs, fake_app_user):
         fake_username, fake_password = fake_app_user
-        page.goto(f"{frontend_url}login")
+        page.goto(f"{envs.frontend_url}login")
         LoginPage.fill_user_field(username=fake_username) #fake_username
         LoginPage.fill_password_field(password=fake_password) #fake_password
         LoginPage.click_log_in_btn()
@@ -76,8 +74,8 @@ class TestNegativeAuth:
 
     @allure.feature(Feature.sign_up)
     @allure.title("Создание нового аккаунта с не валидными данными пользователя")
-    def test_create_not_valid_user(self, page: Page, frontend_url):
-        page.goto(f"{frontend_url}login")
+    def test_create_not_valid_user(self, page: Page, envs):
+        page.goto(f"{envs.frontend_url}login")
         LoginPage.click_create_account_btn()
         LoginPage.fill_user_field() #(USERNAME_FIELD, "1")
         LoginPage.fill_password_field() #(PASSWORD_FIELD, "1")
@@ -89,10 +87,8 @@ class TestNegativeAuth:
 
     @allure.feature(Feature.sign_up)
     @allure.title("Создание нового аккаунта с не валидным паролем пользователя")
-    def test_create_not_valid_password(self, page: Page, frontend_url):
-        user = fake.name()
-        password = fake.password(length=13)
-        page.goto(f"{frontend_url}login")
+    def test_create_not_valid_password(self, page: Page, envs):
+        page.goto(f"{envs.frontend_url}login")
         LoginPage.click_create_account_btn()
         LoginPage.fill_account_data()
 

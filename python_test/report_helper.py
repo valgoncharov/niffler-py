@@ -16,5 +16,6 @@ class Story:
     negative_cases = "Негативные сценарии"
     db = "База данных"
     api = "Работа через API"
+    kafka = "Работа с Kafka"
     search_criteria = "Критерии поиска"
     category_restrictions = "Ограничения по категориям"
