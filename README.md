@@ -145,6 +145,7 @@ Build to Docker daemon failed, perhaps you should make sure your credentials for
   <code><img src="images/playwright.png" width="50" height="50"  alt="A-d-am" title="Playwright"></code>
   <code><img src="images/docker.png" width="50" height="50"  alt="A-d-am" title="Docker"></code>
   <code><img src="images/kafka.png" width="50" height="50"  alt="A-d-am" title="Docker"></code>
+  <code><img src="images/kafka_logo.png" width="50" height="50"  alt="A-d-am" title="Docker"></code>
   <code><img src="images/grpc.png" width="100" height="100"  alt="A-d-am" title="gRPC"></code>
 </p>
 
