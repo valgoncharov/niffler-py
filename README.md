@@ -141,8 +141,8 @@ Build to Docker daemon failed, perhaps you should make sure your credentials for
   <code><img src="images/pytest.png" width="50" height="50"  alt="A-d-am" title="PyTest"></code>
   <code><img src="images/github.png" width="50" height="50"  alt="A-d-am" title="Github"></code>
   <code><img src="images/github_logo.png" width="50" height="50"  alt="A-d-am" title="Github"></code>
-  <code><img src="images/github_action.png" width="50" height="50"  alt="A-d-am" title="Github Action"></code>
-  <code><img src="images/git_action.png" width="50" height="50"  alt="A-d-am" title="Github Action"></code>
+  <code><img src="images/github_action.png" width="70" height="70"  alt="A-d-am" title="Github Action"></code>
+  <code><img src="images/git_action.png" width="70" height="70"  alt="A-d-am" title="Github Action"></code>
   <code><img src="images/pycharm.png" width="50" height="50"  alt="A-d-am" title="PyCharm"></code>
   <code><img src="images/playwright.png" width="50" height="50"  alt="A-d-am" title="Playwright"></code>
   <code><img src="images/docker.png" width="50" height="50"  alt="A-d-am" title="Docker"></code>
