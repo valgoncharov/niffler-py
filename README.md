@@ -137,13 +137,13 @@ Build to Docker daemon failed, perhaps you should make sure your credentials for
 
 ###  Используемые технологии
 <p align="center">
-  <code><img src="images/python.png" width="50" height="50"  alt="A-d-am" title="Python"></code>
-  <code><img src="images/pytest.png" width="50" height="50"  alt="A-d-am" title="PyTest"></code>
-  <code><img src="images/github.png" width="50" height="50"  alt="A-d-am" title="Github"></code>
+  <code><img src="images/python.png" width="60" height="60"  alt="A-d-am" title="Python"></code>
+  <code><img src="images/pytest.png" width="60" height="60"  alt="A-d-am" title="PyTest"></code>
+  <code><img src="images/github.png" width="60" height="60"  alt="A-d-am" title="Github"></code>
   <code><img src="images/g_a.png" width="60" height="60"  alt="A-d-am" title="Github Action"></code>
-  <code><img src="images/pycharm.png" width="50" height="50"  alt="A-d-am" title="PyCharm"></code>
-  <code><img src="images/playwright.png" width="50" height="50"  alt="A-d-am" title="Playwright"></code>
-  <code><img src="images/docker.png" width="50" height="50"  alt="A-d-am" title="Docker"></code>
+  <code><img src="images/pycharm.png" width="60" height="60"  alt="A-d-am" title="PyCharm"></code>
+  <code><img src="images/playwright.png" width="60" height="60"  alt="A-d-am" title="Playwright"></code>
+  <code><img src="images/docker.png" width="60" height="60"  alt="A-d-am" title="Docker"></code>
   <code><img src="images/kafka_logo.png" width="100" height="100"  alt="A-d-am" title="Docker"></code>
   <code><img src="images/grpc.png" width="100" height="100"  alt="A-d-am" title="gRPC"></code>
 </p>
