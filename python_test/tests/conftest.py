@@ -83,16 +83,12 @@ def fake_app_user():
 
 
 @pytest.fixture(scope="session")
-def playwright():
+def browser():
     with sync_playwright() as p:
-        yield p
-
-
-@pytest.fixture
-def browser(playwright):
-    browser = playwright.chromium.launch(headless=False)
-    yield browser
-    browser.close()
+        # Запускаем браузер. headless=false нужен только для дебага.
+        browser = p.chromium.launch(headless=True)
+        yield browser
+        browser.close()
 
 
 @pytest.fixture(scope="session")
