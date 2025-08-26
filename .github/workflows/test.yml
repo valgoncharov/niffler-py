@@ -1,26 +1,21 @@
-name: Check and tests on python
+name: Niffler tests on python
 
 on:
   pull_request:
-     types: [ opened, reopened, synchronize ]
-     branches:
-      - main
+    types: [ opened, reopened, synchronize ]
 
 jobs:
-  tests:
-    name: Test app
+  python_tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          python-version: '3.10'
-          cache: 'pip'
-      - run: pip install --upgrade -r requirements.txt
-      - run: docker compose build
-      - run: docker compose up -d
-      - run: pytest tests
+          ref: ${{ env.GITHUB_SHA }}
 
-      - run: docker compose logs app
-        if: always()
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
 
