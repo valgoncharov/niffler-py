@@ -1,3 +1,5 @@
+name: Niffler tests on python
+
 on:
   pull_request:
      types: [ opened, reopened, synchronize ]
