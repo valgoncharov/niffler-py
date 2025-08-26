@@ -1,4 +1,4 @@
-name: Niffler tests on python
+name: Check and tests on python
 
 on:
   pull_request:
@@ -17,7 +17,8 @@ jobs:
           python-version: '3.10'
           cache: 'pip'
       - run: pip install --upgrade -r requirements.txt
-      - run: docker compose up -d --build
+      - run: docker compose build
+      - run: docker compose up -d
       - run: pytest tests
 
       - run: docker compose logs app
