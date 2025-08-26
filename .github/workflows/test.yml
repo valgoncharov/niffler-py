@@ -19,3 +19,4 @@ jobs:
 
       - run: docker compose logs app
         if: always()
+
