@@ -3,6 +3,9 @@ name: Diploma tests on python for niffler app
 on:
   pull_request:
     types: [ opened, reopened, synchronize ]
+    branches:
+      - main
+
 
 jobs:
   python_tests:
