@@ -5,7 +5,7 @@ description = ""
 authors = [
     {name = "valgoncharov",email = "99090572+valgoncharov@users.noreply.github.com"}
 ]
-readme = "README.md"
+#readme = "README.md"
 requires-python = ">=3.11,<3.13"  # Более точное указание версии Python
 dependencies = [
     "playwright>=1.52.0,<2.0.0",
