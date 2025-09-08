@@ -5,18 +5,15 @@ import grpc
 from grpc import insecure_channel
 
 import pytest
-try:
-    from _pytest.fixtures import FixtureDef
-    from _pytest.python import FixtureRequest
-    from _pytest.nodes import Item
-except ImportError:
-    from pytest import Item, FixtureDef, FixtureRequest
+from pytest import Item, FixtureDef, FixtureRequest
 from allure_commons.types import AttachmentType
 
 from python_test.internal.grpc.interceptors.allure import AllureInterceptor
 from python_test.internal.grpc.interceptors.logging import LoggingInterceptor
 from python_test.internal.pb.niffler_currency_pb2_pbreflect import NifflerCurrencyServiceClient
 
+from allure_commons.reporter import AllureReporter
+from allure_pytest.listener import AllureListener
 
 from playwright.sync_api import Playwright, sync_playwright, Page
 from python_test.data_helpers.api_helpers import UserApiHelper
@@ -34,6 +31,11 @@ INTERCEPTORS = [
 ]
 
 
+def allure_logger(config) -> AllureReporter:
+    listener: AllureListener = config.pluginmanager.get_plugin("allure_listener")
+    return listener.allure_logger
+
+
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_call(item: Item):
     yield
@@ -43,14 +45,22 @@ def pytest_runtest_call(item: Item):
         print(f"Could not set Allure title: {e}")
 
 
-@pytest.hookimpl(hookwrapper=True)
+@pytest.hookimpl(hookwrapper=True, trylast=True)
 def pytest_fixture_setup(fixturedef: FixtureDef, request: FixtureRequest):
     yield
-    try:
-        with allure.step(f"Fixture {fixturedef.argname}"):
-            pass
-    except Exception as e:
-        print(f"Could not create Allure step: {e}")
+    logger = allure_logger(request.config)
+    item = logger.get_last_item()
+    scope_letter = fixturedef.scope[0].upper()
+    normalize_fix_name = " ".join(fixturedef.argname.split("_")).title()
+    item.name = f'[{scope_letter}] {normalize_fix_name}'
+
+
+@pytest.hookimpl(hookwrapper=True, tryfirst=True)
+def pytest_runtest_teardown(item):
+    yield
+    reporter = allure_logger(item.config)
+    test = reporter.get_test(None)
+    test.labels = list(filter(lambda x: x.name not in ("suite", "subSuite", "parentSuite"), test.labels))
 
 
 @pytest.fixture(scope="session")
