@@ -1,6 +1,9 @@
 import os
 import allure
 
+import grpc
+from grpc import insecure_channel
+
 import pytest
 try:
     from _pytest.fixtures import FixtureDef
@@ -9,6 +12,12 @@ try:
 except ImportError:
     from pytest import Item, FixtureDef, FixtureRequest
 from allure_commons.types import AttachmentType
+
+from python_test.internal.grpc.interceptors.allure import AllureInterceptor
+from python_test.internal.grpc.interceptors.logging import LoggingInterceptor
+from python_test.internal.pb.niffler_currency_pb2_pbreflect import NifflerCurrencyServiceClient
+
+
 from playwright.sync_api import Playwright, sync_playwright, Page
 from python_test.data_helpers.api_helpers import UserApiHelper
 from python_test.clients.spends_client import SpendsHttpClient
@@ -17,6 +26,12 @@ from dotenv import load_dotenv
 from python_test.model.config import Envs
 from faker import Faker
 from python_test.clients.kafka_client import KafkaClient
+
+
+INTERCEPTORS = [
+    LoggingInterceptor(),
+    AllureInterceptor(),
+]
 
 
 @pytest.hookimpl(hookwrapper=True)
@@ -149,3 +164,11 @@ def kafka(envs: Envs):
     """Взаимодействие с Kafka"""
     with KafkaClient(envs) as k:
         yield k
+
+
+@pytest.fixture(scope='session')
+def grpc_client(envs: Envs, request: pytest.FixtureRequest) -> NifflerCurrencyServiceClient:
+    host = envs.grpc_service_host
+    channel = insecure_channel(host)
+    intercepted_channel = grpc.intercept_channel(channel, *INTERCEPTORS)
+    return NifflerCurrencyServiceClient(intercepted_channel)

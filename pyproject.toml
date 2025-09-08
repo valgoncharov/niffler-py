@@ -48,7 +48,7 @@ addopts = [
     "--alluredir=allure-results",
     "--clean-alluredir",
     "-v",
-    "-n auto"
+    "-nauto"
 ]
-testpaths = ["tests"]
+testpaths = ["python_test/tests"]
 python_files = "test_*.py"
