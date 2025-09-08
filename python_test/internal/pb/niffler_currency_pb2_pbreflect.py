@@ -14,7 +14,7 @@ from typing import (
     Tuple,
 )
 
-from internal.pb.niffler_currency_pb2 import (
+from python_test.internal.pb.niffler_currency_pb2 import (
     CurrencyResponse,
     CalculateRequest,
     CalculateResponse,
