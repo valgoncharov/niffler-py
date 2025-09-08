@@ -168,7 +168,7 @@ Build to Docker daemon failed, perhaps you should make sure your credentials for
 
 
 * gRPC тесты
-
+  * ✅ Проверка функционала валют (5 тест кейсов)
 
 ## Как запустить
 
