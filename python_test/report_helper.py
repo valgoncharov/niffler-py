@@ -9,6 +9,7 @@ class Feature:
     spending = "Расходы"
     search = "Поиск"
     category = "Категории"
+    currency = "Валюты"
 
 
 class Story:
@@ -17,5 +18,6 @@ class Story:
     db = "База данных"
     api = "Работа через API"
     kafka = "Работа с Kafka"
+    grpc = "Работа с grpc"
     search_criteria = "Критерии поиска"
     category_restrictions = "Ограничения по категориям"
