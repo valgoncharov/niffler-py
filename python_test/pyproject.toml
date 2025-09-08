@@ -3,7 +3,7 @@ name = "python_test"
 version = "0.1.0"
 description = "Python test project"
 authors = ["valgoncharov <99090572+valgoncharov@users.noreply.github.com>"]
-readme = "README.md"  # Раскомментируйте и создайте файл
+#readme = "README.md"  # Раскомментируйте и создайте файл
 license = "MIT"  # Добавьте лицензию
 
 [tool.poetry.dependencies]
