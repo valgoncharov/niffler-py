@@ -19,5 +19,6 @@ class Story:
     api = "Работа через API"
     kafka = "Работа с Kafka"
     grpc = "Работа с grpc"
+    soap = "Работа с soap"
     search_criteria = "Критерии поиска"
     category_restrictions = "Ограничения по категориям"

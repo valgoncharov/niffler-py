@@ -80,7 +80,7 @@ jobs:
 
       - name: Install project (python_test)
         run: |
-          python -m pip install ./python_test
+          python -m pip install .
 
       - name: Install Playwright browsers
         run: |
