@@ -79,12 +79,10 @@ jobs:
           python -m pip install wheel
 
       - name: Install project (python_test)
-        working-directory: python_test
         run: |
-          python -m pip install .
+          python -m pip install ./python_test
 
       - name: Install Playwright browsers
-        working-directory: python_test
         run: |
           python -m playwright install --with-deps
 
@@ -94,9 +92,8 @@ jobs:
           docker compose -f docker-compose.ci.yml up -d
 
       - name: Run pytest
-        working-directory: python_test
         run: |
-          pytest
+          pytest python_test/ 
 
       - name: Upload Allure results
         if: always()

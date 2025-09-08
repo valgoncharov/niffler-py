@@ -1,26 +1,54 @@
-[project]
-name = "niffler-py"
+[tool.poetry]
+name = "python_test"
 version = "0.1.0"
-description = ""
-authors = [
-    {name = "valgoncharov",email = "99090572+valgoncharov@users.noreply.github.com"}
-]
-readme = "README.md"
-requires-python = ">=3.12"
-dependencies = [
-    "pytest (>=8.3.5,<9.0.0)",
-    "playwright (>=1.52.0,<2.0.0)",
-    "confluent-kafka (>=2.11.0,<3.0.0)",
-    "allure-pytest (>=2.14.3,<3.0.0)",
-    "dotenv (>=0.9.9,<0.10.0)",
-    "faker (>=37.4.2,<38.0.0)",
-    "pydantic (>=2.11.7,<3.0.0)",
-    "sqlmodel (>=0.0.24,<0.0.25)",
-    "logging (>=0.4.9.6,<0.5.0.0)",
-    "google (>=3.0.0,<4.0.0)"
-]
+description = "Python test project"
+authors = ["valgoncharov <99090572+valgoncharov@users.noreply.github.com>"]
+#readme = "README.md"
+license = "MIT"
 
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+playwright = "^1.52.0"
+pytest = "^7.0.0"
+pytest-playwright = "^0.7.0"
+pytest-xdist = "^3.6.1"
+python-dotenv = "^1.0.0"
+allure-pytest = "^2.14.3"
+faker = "^37.4.2"
+pydantic = "^2.11.7"
+sqlmodel = "^0.0.24"
+sqlalchemy = "^2.0.41"
+grpcio = "^1.74.0"
+protobuf = "^6.31.1"  # ОБНОВЛЕНО ДЛЯ СОВМЕСТИМОСТИ
+pbreflect = "^1.1.0"
+filelock = "^3.19.1"
+confluent-kafka = "^2.11.1"
+jinja2 = "^3.1.6"
+pkce = "^1.0.3"
+curlify = "^3.0.0"
+requests-toolbelt = "^1.0.0"
+xmlschema = "^4.1.0"
+psycopg2-binary = "^2.9.10"
+# grpcio-tools перенесен в dev зависимости если нужен только для разработки
+
+[tool.poetry.group.dev.dependencies]
+grpcio-tools = "^1.74.0"  # ПЕРЕНЕСЕНО В DEV
+mypy-protobuf = "^3.6.0"
+black = "^25.1.0"
+pylint = "^3.3.7"
+mypy = "^1.15.0"
+pytest-cov = "^4.1.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts = [
+    "--alluredir=allure-results",
+    "--clean-alluredir",
+    "-v",
+    "-n auto"
+]
+testpaths = ["tests"]
+python_files = "test_*.py"
