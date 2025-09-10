@@ -10,10 +10,10 @@ from requests import HTTPError
 
 from python_test.data_helpers.api_helpers import SpendsHttpClient
 from python_test.databases.spend_db import SpendDb
-from python_test.fixtures.auth_fixtures import auth_token
+from python_test.fixture.auth_fixtures import auth_token
 from python_test.marks import TestData
 from python_test.model.config import Envs
-from python_test.model.db.category import Category
+from python_test.model.db.spend import Category
 from python_test.model.db.spend import SpendAdd
 from python_test.report_helper import Epic, Feature, Story
 
@@ -42,7 +42,8 @@ def module_fixture(tmp_path_factory, worker_id, spends_client: SpendsHttpClient,
 
 @pytest.fixture(scope='function', autouse=True)
 def wait_before_run_test():
-    time.sleep(1)  # Ожидание для отработки фикстуры модуля при параллельном запуске
+    # Ожидание для отработки фикстуры модуля при параллельном запуске
+    time.sleep(1)
 
 
 def get_spend_model(envs: Envs, category_name: str = '') -> dict:
@@ -58,7 +59,7 @@ def get_spend_model(envs: Envs, category_name: str = '') -> dict:
 @allure.epic(Epic.app)
 @allure.feature(Feature.spending)
 class TestApi:
-    @allure.story(Story.api['spend'])
+    @allure.story(Story.api)
     class TestSpend:
 
         @TestData.spend({
@@ -171,7 +172,7 @@ class TestApi:
                 assert body['title'] == 'Bad Request'
                 assert body['detail'] == 'Amount should be greater than 0.01'
 
-    @allure.story(Story.api['category'])
+    @allure.story(Story.api)
     class TestCategory:
 
         @staticmethod
@@ -199,7 +200,8 @@ class TestApi:
             new_archived_status = True
 
             with allure.step('Обновить существующую категорию через API'):
-                update_category = spends_client.update_category(category.id, new_name, new_archived_status)
+                update_category = spends_client.update_category(
+                    category.id, new_name, new_archived_status)
 
             with allure.step('Проверить, что обновленная категория есть в списке всех категорий'):
                 assert category.id in spends_client.get_ids_all_categories()
@@ -211,10 +213,12 @@ class TestApi:
         @TestData.category({'category_name': 'test_duplicate_category', 'archived': False})
         @allure.title('Нет возможности добавить дубль существующей категории')
         def test_no_possible_add_duplicate_category(self, spends_client: SpendsHttpClient, category):
-            new_category = {'name': 'test_duplicate_category', 'username': spends_client.user_name, 'archived': False}
+            new_category = {'name': 'test_duplicate_category',
+                            'username': spends_client.user_name, 'archived': False}
 
             with allure.step('Попытаться добавить дубликат категории'):
-                resp = spends_client.session.post('/api/categories/add', json=new_category)
+                resp = spends_client.session.post(
+                    '/api/categories/add', json=new_category)
                 assert resp.status_code == HTTPStatus.CONFLICT
 
             with allure.step('Проверить ответ, о невозможности добавления дубликата категории'):
@@ -225,13 +229,16 @@ class TestApi:
         @TestData.category({'category_name': 'test_duplicate_archive_category', 'archived': False})
         @allure.title('Нет возможности добавить дубль существующей архивной категории')
         def test_no_possible_add_duplicate_archive_category(self, spends_client: SpendsHttpClient, category):
-            new_category = {'name': 'test_duplicate', 'username': spends_client.user_name, 'archived': False}
+            new_category = {'name': 'test_duplicate',
+                            'username': spends_client.user_name, 'archived': False}
 
             with allure.step('Сделать существующую категорию архивной'):
-                spends_client.update_category(category.id, new_category['name'], True)
+                spends_client.update_category(
+                    category.id, new_category['name'], True)
 
             with allure.step('Попытаться добавить дубликат архивной категории'):
-                resp = spends_client.session.post('/api/categories/add', json=new_category)
+                resp = spends_client.session.post(
+                    '/api/categories/add', json=new_category)
             assert resp.status_code == HTTPStatus.CONFLICT
 
             with allure.step('Проверить ответ, о невозможности добавления дубликата архивной категории'):

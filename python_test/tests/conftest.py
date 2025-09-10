@@ -32,7 +32,8 @@ INTERCEPTORS = [
 
 
 def allure_logger(config) -> AllureReporter:
-    listener: AllureListener = config.pluginmanager.get_plugin("allure_listener")
+    listener: AllureListener = config.pluginmanager.get_plugin(
+        "allure_listener")
     return listener.allure_logger
 
 
@@ -60,7 +61,8 @@ def pytest_runtest_teardown(item):
     yield
     reporter = allure_logger(item.config)
     test = reporter.get_test(None)
-    test.labels = list(filter(lambda x: x.name not in ("suite", "subSuite", "parentSuite"), test.labels))
+    test.labels = list(filter(lambda x: x.name not in (
+        "suite", "subSuite", "parentSuite"), test.labels))
 
 
 @pytest.fixture(scope="session")
@@ -77,8 +79,10 @@ def envs() -> Envs:
         kafka_address=os.getenv("KAFKA_ADDRESS"),
         userdata_db_url=os.getenv('USERDATA_DB_URL'),
         soap_address=os.getenv("SOAP_ADDRESS"),
+        grpc_service_host=os.getenv("GRPC_SERVICE_HOST"),
     )
-    allure.attach(envs_instance.model_dump_json(indent=2), name="envs.json", attachment_type=AttachmentType.JSON)
+    allure.attach(envs_instance.model_dump_json(indent=2),
+                  name="envs.json", attachment_type=AttachmentType.JSON)
     return envs_instance
 
 

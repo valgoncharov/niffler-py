@@ -12,3 +12,4 @@ class Envs(BaseModel):
     kafka_address: str | None = Field(default=None)
     userdata_db_url: str | None = Field(default=None)  # Теперь может быть None
     soap_address: str | None = Field(default=None)  # Теперь может быть None
+    grpc_service_host: str | None = Field(default=None)  # Добавлено для gRPC

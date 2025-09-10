@@ -16,7 +16,8 @@ import requests
 
 def attach_response(response: Response, *args, **kwargs):
     attachment_name = f'{response.request.method} {response.request.url}'
-    allure.attach(dump_response(response), attachment_name, attachment_type=AttachmentType.TEXT)
+    allure.attach(dump_response(response), attachment_name,
+                  attachment_type=AttachmentType.TEXT)
 
 
 class UserApiHelper:
@@ -41,6 +42,25 @@ class UserApiHelper:
         else:
             logging.info(f'Пользователь {user_name} существует')
             return response
+
+    @allure.step("Получение токена для пользователя {user_name}")
+    def get_token(self, user_name: str, user_password: str) -> str:
+        """Получить токен аутентификации для пользователя"""
+        login_url = self.auth_url.replace('/register', '/login')
+        _resp = self.session.get(login_url)
+        data = {
+            'username': user_name,
+            'password': user_password,
+            '_csrf': _resp.cookies.get('XSRF-TOKEN', '')
+        }
+        response = self.session.post(login_url, data)
+        if response.status_code == HTTPStatus.OK:
+            # Предполагаем, что токен возвращается в заголовке или теле ответа
+            # Это может потребовать корректировки в зависимости от реальной реализации API
+            return response.headers.get('Authorization', '').replace('Bearer ', '')
+        else:
+            raise Exception(
+                f"Не удалось получить токен для пользователя {user_name}")
 
 
 class SpendsHttpClient:
@@ -76,7 +96,8 @@ class SpendsHttpClient:
         if not date:
             date = datetime.now(timezone.utc)
         formatted_time = date.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
-        category_spend = Category(name=category, username=self.user_name, archived=False)
+        category_spend = Category(
+            name=category, username=self.user_name, archived=False)
         spend = SpendAdd(
             spendDate=formatted_time,
             category=category_spend,
@@ -85,7 +106,8 @@ class SpendsHttpClient:
             description=desc,
             username=self.user_name
         )
-        _resp = self.session.post(f'{self.base_url_spends}/add', json=spend.model_dump())
+        _resp = self.session.post(
+            f'{self.base_url_spends}/add', json=spend.model_dump())
         self.raise_for_status(_resp)
         return SpendAdd.model_validate(_resp.json())
 
@@ -93,17 +115,19 @@ class SpendsHttpClient:
     def get_ids_all_spending(self):
         ids = []
         for currency in ['RUB', 'KZT', 'USD', 'EUR']:
-            _resp = self.session.get(f'{self.base_url_spends}/all?filterCurrency={currency}')
+            _resp = self.session.get(
+                f'{self.base_url_spends}/all?filterCurrency={currency}')
             assert _resp.status_code == HTTPStatus.OK
             body = _resp.json()
             ids += [spend['id'] for spend in body]
         return ids
 
-    @allure.step("Создание пользователя {user_name}")
+    @allure.step("Получение всех категорий")
     def get_ids_all_categories(self, exclude_archived: bool = False) -> list[str]:
-        _resp = self.session.get(f'{self.base_url_categories}/all', params={'archived': exclude_archived})
+        _resp = self.session.get(
+            f'{self.base_url_categories}/all', params={'archived': exclude_archived})
         self.raise_for_status(_resp)
-        return [spend['id'] for spend in _resp.json()]
+        return [category['id'] for category in _resp.json()]
 
     @allure.step("Обновить данные по расходу")
     def update_spend(self, spend_id: str,
@@ -117,7 +141,8 @@ class SpendsHttpClient:
         if not date:
             date = datetime.now(timezone.utc)
         formatted_time = date.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
-        category_spend = Category(name=category, username=self.user_name, archived=False)
+        category_spend = Category(
+            name=category, username=self.user_name, archived=False)
         spend = SpendAdd(
             id=spend_id,
             spendDate=formatted_time,
@@ -127,20 +152,23 @@ class SpendsHttpClient:
             description=desc,
             username=self.user_name
         )
-        _resp = self.session.patch(f'{self.base_url_spends}/edit', json=spend.model_dump())
+        _resp = self.session.patch(
+            f'{self.base_url_spends}/edit', json=spend.model_dump())
         self.raise_for_status(_resp)
         return SpendAdd.model_validate(_resp.json())
 
     @allure.step("Получение всех расходов пользователя в валюте")
     def get_ids_by_currency(self, currency: Literal['RUB', 'KZT', 'USD', 'EUR'] = 'RUB'):
-        _resp = self.session.get(f'{self.base_url_spends}/all?filterCurrency={currency}')
+        _resp = self.session.get(
+            f'{self.base_url_spends}/all?filterCurrency={currency}')
         assert _resp.status_code == HTTPStatus.OK
         body = _resp.json()
         return [spend['id'] for spend in body]
 
     @allure.step("Удалить расход по id")
     def remove_spending_by_id(self, spending_id: int):
-        _resp = self.session.delete(f'{self.base_url_spends}/remove?ids={spending_id}')
+        _resp = self.session.delete(
+            f'{self.base_url_spends}/remove?ids={spending_id}')
         return _resp.status_code
 
     @allure.step("Удалить все расходы")
@@ -149,16 +177,34 @@ class SpendsHttpClient:
         for spending_id in spending_ids_lst:
             self.remove_spending_by_id(spending_id)
 
-    @allure.step("Добавить категорию")
-    def add_category(self, category_name: str) -> int:
-        category_dict = {'name': category_name, 'username': self.user_name}
-        _resp = self.session.post(f'{self.base_url_categories}/add', json=category_dict)
+    @allure.step("Получение всех расходов")
+    def get_spends(self):
+        _resp = self.session.get(f'{self.base_url_spends}/all')
+        self.raise_for_status(_resp)
+        return [SpendAdd.model_validate(spend) for spend in _resp.json()]
+
+    @allure.step("Удаление расходов по списку ID")
+    def remove_spends(self, spend_ids: list[str]):
+        ids_param = ','.join(spend_ids)
+        _resp = self.session.delete(
+            f'{self.base_url_spends}/remove?ids={ids_param}')
+        self.raise_for_status(_resp)
         return _resp.status_code
+
+    @allure.step("Добавить категорию")
+    def add_category(self, category_name: str) -> Category:
+        category_dict = {'name': category_name, 'username': self.user_name}
+        _resp = self.session.post(
+            f'{self.base_url_categories}/add', json=category_dict)
+        self.raise_for_status(_resp)
+        return Category.model_validate(_resp.json())
 
     @allure.step("Обновить данные категории")
     def update_category(self, category_id: str, category_name: str, archived: bool = False):
-        category_dict = {"id": category_id, 'name': category_name, 'username': self.user_name, 'archived': archived}
-        _resp = self.session.patch(f'{self.base_url_categories}/update', json=category_dict)
+        category_dict = {"id": category_id, 'name': category_name,
+                         'username': self.user_name, 'archived': archived}
+        _resp = self.session.patch(
+            f'{self.base_url_categories}/update', json=category_dict)
         self.raise_for_status(_resp)
         return Category.model_validate(_resp.json())
 
